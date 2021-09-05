@@ -49,6 +49,11 @@ echo "Creating font map for enscript"
 	echo 'An error occured while creating enscript font map. Aborting.'
 ) || exit 1
 
+echo "Copying enscript library"
+enscript_lib="$data_dir"/enscript_library
+[[ -e "$enscript_lib" ]] && { rm -r "$enscript_lib" || exit 1; }
+cp -r resources/enscript_lib "$enscript_lib"
+
 if [[ -e "$HOME/.enscriptrc" ]]; then
 	echo "Found existing enscript configuration file."
 	enscriptrc_bak="$enscript_profile".`date +%Y%m%d%H%M%S`.bak
@@ -60,5 +65,6 @@ echo "Creating '$enscript_profile'"
 
 echo "Clean7Bit: 0" >>"$enscript_profile"
 echo "AFMPath: $data_dir/fonts:/usr/local/share/enscript" >>"$enscript_profile"
+echo "LibraryPath: $enscript_lib:/usr/share/enscript:$HOME/.enscript" >> "$enscript_profile"
 
 echo 'Installation complete'

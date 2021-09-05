@@ -33,6 +33,7 @@ iconv \
 enscript \
 	--font "$font_name" \
 	--header-font "$font_name" \
+	--fancy-header=txt2pdf \
 	--header "$input_fname||$(date +%F)" \
 	--margins $_25mm:$_25mm:$_25mm:$_25mm \
 	--footer '||Strona $% z $=' \
@@ -43,3 +44,5 @@ enscript \
 ps2pdf - "$input_fname".pdf
 
 # "--output -" for the enscript command is necessary to write to stdout
+# "--fancy-header=simple2" option name and argument must be joined with
+# '='. Won't work if separated with space. Bug in enscript?

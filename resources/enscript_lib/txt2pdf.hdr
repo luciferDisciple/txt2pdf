@@ -1,0 +1,48 @@
+%source: https://askubuntu.com/a/544620
+% -- code follows this line --
+%Format: fmodstr    $D{%a %b %d %H:%M:%S %Y}
+%Format: pagenumstr $V$%
+
+%HeaderHeight: 38
+%FooterHeight: 15
+
+/do_header {   % print default simple header
+
+  % Footer
+  gsave
+    d_footer_x d_footer_y HFpt_h 3 div add translate
+    HF setfont
+
+    user_footer_p {
+      d_footer_x  d_footer_y moveto user_footer_left_str show
+
+      d_footer_w user_footer_center_str stringwidth pop sub 2 div
+      0 moveto user_footer_center_str show
+
+      d_footer_x d_footer_w add user_footer_right_str stringwidth pop sub
+      d_footer_y moveto user_footer_right_str show
+    } if
+  grestore
+
+  % Header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+    HF setfont
+
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+  grestore
+
+} def
+
