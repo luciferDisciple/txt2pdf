@@ -3,10 +3,11 @@
 prog_name=${0##*/}
 font_name=TeXGyreCursor-Regular9
 input_fname=
+date_string=
+date_arg=
 _25mm=70.866
 
 usage () {
-	echo "usage: $prog_name TEXTFILE"
 	echo "Produce pdf with the body text read from TEXTFILE."
 	echo
 	echo "Output is typeset with monospaced font."
@@ -16,6 +17,10 @@ usage () {
 	echo "Format of the date in the running header is chosen by checking"
 	echo "the value of LC_TIME environment variable. If the locale isn't"
 	echo "recognized, then %Y-%m-%D is used."
+	echo "Format of the page mark in the running footer is chosen by"
+	echo "checking the value of LANG environment variable. If the value"
+	echo "isn't recognized, then the default is used, which is"
+	echo "PAGE_NUMBER / TOTAL_PAGES ."
 }
 
 err_msg () {
@@ -33,11 +38,26 @@ case "$LC_TIME" in
 	pl_PL?*)
 		date_string=$(date '+%-d %B %Y')
 		;;
+	en_US?*)
+		date_string=$(date '+%B %-d, %Y')
+		;;
 	*)
 		date_string=$(date +%F)
 esac
 
+case "$LANG" in
+	en?*)
+		page_mark_format='||Page $% of $='
+		;;
+	pl_PL?*)
+		page_mark_format='||Strona $% z $='
+		;;
+	*)
+		page_mark_format='||$%/$='
+esac
+
 date_string=$(echo "$date_string" | iconv --to-code LATIN2)
+page_mark_format=$(echo "$page_mark_format" | iconv --to-code LATIN2)
 
 iconv \
 	--from-code UTF-8 \
@@ -50,7 +70,7 @@ enscript \
 	--fancy-header=txt2pdf \
 	--header "$input_fname||$date_string" \
 	--margins $_25mm:$_25mm:$_25mm:$_25mm \
-	--footer '||Strona $% z $=' \
+	--footer "$page_mark_format" \
 	--word-wrap \
 	--encoding latin2 \
 	--output - \
