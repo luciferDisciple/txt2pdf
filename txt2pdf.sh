@@ -12,6 +12,10 @@ usage () {
 	echo "Output is typeset with monospaced font."
 	echo "TEXTFILE must be encoded in UTF-8 and contain only characters"
 	echo "available in LATIN-2 charset."
+	echo
+	echo "Format of the date in the running header is chosen by checking"
+	echo "the value of LC_TIME environment variable. If the locale isn't"
+	echo "recognized, then %Y-%m-%D is used."
 }
 
 err_msg () {
@@ -25,13 +29,15 @@ input_fname="$1"
 [[ ! -f "$input_fname" ]] && err_msg "File '$input_fname' doesn't exist." &&
 	exit
 
-pl_months=(
-	bad_index stycznia lutego marca kwietnia maja czerwca lipca sierpnia
-	września października listopada grudnia
-)
-pl_current_month=${pl_months[$(date '+%-m')]}
-date_string="$(date '+%-d') $pl_current_month $(date +%Y)"
-date_string=$(echo "$date_string" | iconv --from-code UTF-8 --to-code LATIN2)
+case "$LC_TIME" in
+	pl_PL?*)
+		date_string=$(date '+%-d %B %Y')
+		;;
+	*)
+		date_string=$(date +%F)
+esac
+
+date_string=$(echo "$date_string" | iconv --to-code LATIN2)
 
 iconv \
 	--from-code UTF-8 \
