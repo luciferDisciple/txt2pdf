@@ -8,7 +8,12 @@ date_arg=
 _25mm=70.866
 
 usage () {
+	echo "usage: $prog_name [OPTION]... TEXTFILE"
 	echo "Produce pdf with the body text read from TEXTFILE."
+	echo
+	echo "-h, --help          display this help and exit"
+	echo "-d, --date=TEXT     use TEXT in the running header instead of"
+	echo "                    today's date"
 	echo
 	echo "Output is typeset with monospaced font."
 	echo "TEXTFILE must be encoded in UTF-8 and contain only characters"
@@ -28,12 +33,34 @@ err_msg () {
 	echo "[$prog_name] $message" >&2
 }
 
+while :; do
+	case $1 in
+		-h|-\?|-help|--help)
+			usage
+			exit
+			;;
+		-d|--date)
+			date_arg=$2
+			date_string=$date_arg
+			shift
+			;;
+		--date=?*)
+			date_arg=${1#*=}  # remove everything up to first '='
+			date_string=$date_arg
+			;;
+		*)
+			break
+	esac
+	shift
+done
+
 input_fname="$1"
 
 [[ -z "$input_fname" ]] && err_msg "Input file not specified." && usage && exit
 [[ ! -f "$input_fname" ]] && err_msg "File '$input_fname' doesn't exist." &&
 	exit
 
+[[ -z "$date_string" ]] &&
 case "$LC_TIME" in
 	pl_PL?*)
 		date_string=$(date '+%-d %B %Y')
