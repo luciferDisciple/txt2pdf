@@ -25,6 +25,14 @@ input_fname="$1"
 [[ ! -f "$input_fname" ]] && err_msg "File '$input_fname' doesn't exist." &&
 	exit
 
+pl_months=(
+	bad_index stycznia lutego marca kwietnia maja czerwca lipca sierpnia
+	września października listopada grudnia
+)
+pl_current_month=${pl_months[$(date '+%-m')]}
+date_string="$(date '+%-d') $pl_current_month $(date +%Y)"
+date_string=$(echo "$date_string" | iconv --from-code UTF-8 --to-code LATIN2)
+
 iconv \
 	--from-code UTF-8 \
 	--to-code   LATIN2 \
@@ -34,7 +42,7 @@ enscript \
 	--font "$font_name" \
 	--header-font "$font_name" \
 	--fancy-header=txt2pdf \
-	--header "$input_fname||$(date +%F)" \
+	--header "$input_fname||$date_string" \
 	--margins $_25mm:$_25mm:$_25mm:$_25mm \
 	--footer '||Strona $% z $=' \
 	--word-wrap \
