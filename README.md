@@ -11,8 +11,10 @@ usage: txt2pdf.sh [OPTION]... TEXTFILE
 Produce pdf with the body text read from TEXTFILE.
 
 -h, --help          display this help and exit
--d, --date=TEXT     use TEXT in the running header instead of
+-d, --date=DATE     use DATE in the running header instead of
                     today's date
+-t, --title=TITLE   use TITLE as the title in the running
+                    header instead of the TEXTFILE
 
 Output is typeset with monospaced font.
 TEXTFILE must be encoded in UTF-8 and contain only characters
@@ -33,3 +35,9 @@ $
 Run `install.sh` script. It will place the script in one of the directories in
 your `PATH` environment variable and copy other files, that the script depends
 on.
+
+## Examples
+
+![Output document in English](/examples/english.png)
+
+![Output document in Polish language](/examples/polish.png)

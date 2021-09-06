@@ -12,8 +12,10 @@ usage () {
 	echo "Produce pdf with the body text read from TEXTFILE."
 	echo
 	echo "-h, --help          display this help and exit"
-	echo "-d, --date=TEXT     use TEXT in the running header instead of"
+	echo "-d, --date=DATE     use DATE in the running header instead of"
 	echo "                    today's date"
+	echo "-t, --title=TITLE   use TITLE as the title in the running"
+	echo "                    header instead of the TEXTFILE"
 	echo
 	echo "Output is typeset with monospaced font."
 	echo "TEXTFILE must be encoded in UTF-8 and contain only characters"
@@ -48,6 +50,15 @@ while :; do
 			date_arg=${1#*=}  # remove everything up to first '='
 			date_string=$date_arg
 			;;
+		--title=?*)
+			title_arg=${1#*=}
+			document_title=$title_arg
+			;;
+		-t|--title)
+			title_arg=$2
+			document_title=$title_arg
+			shift
+			;;
 		*)
 			break
 	esac
@@ -55,6 +66,14 @@ while :; do
 done
 
 input_fname="$1"
+
+document_title=${document_title:-$input_fname}
+document_title=$(echo $document_title | iconv --to-code LATIN2)
+
+if [[ $document_title =~ \| ]]; then
+	err_msg "Document title must not contain '|' character"
+	exit 1
+fi
 
 [[ -z "$input_fname" ]] && err_msg "Input file not specified." && usage && exit
 [[ ! -f "$input_fname" ]] && err_msg "File '$input_fname' doesn't exist." &&
@@ -95,7 +114,7 @@ enscript \
 	--font "$font_name" \
 	--header-font "$font_name" \
 	--fancy-header=txt2pdf \
-	--header "$input_fname||$date_string" \
+	--header "$document_title||$date_string" \
 	--margins $_25mm:$_25mm:$_25mm:$_25mm \
 	--footer "$page_mark_format" \
 	--word-wrap \
