@@ -3,6 +3,7 @@
 prog_name=${0##*/}
 font_name=TeXGyreCursor-Regular9
 input_fname=
+output_fname=
 date_string=
 date_arg=
 _25mm=70.866
@@ -14,6 +15,7 @@ usage () {
 	echo "-h, --help          display this help and exit"
 	echo "-d, --date=DATE     use DATE in the running header instead of"
 	echo "                    today's date"
+	echo "-o, --output=FILE   write output to FILE instead of TEXTFILE.pdf"
 	echo "-t, --title=TITLE   use TITLE as the title in the running"
 	echo "                    header instead of the TEXTFILE"
 	echo
@@ -50,6 +52,21 @@ while :; do
 			date_arg=${1#*=}  # remove everything up to first '='
 			date_string=$date_arg
 			;;
+		-o|--output)
+			output_arg=$2
+			[[ -z "output_arg" ]] &&
+				err_msg "Output file name must follow $1 option." &&
+				exit 1
+			output_fname=$output_arg
+			shift
+			;;
+		--output=?*)
+			output_arg=${1#*=} # remove everything up to first '='
+			[[ -z "output_arg" ]] &&
+				err_msg "Output file name must follow $1 option." &&
+				exit 1
+			output_fname=$output_arg
+			;;
 		--title=?*)
 			title_arg=${1#*=}
 			document_title=$title_arg
@@ -66,6 +83,8 @@ while :; do
 done
 
 input_fname="$1"
+
+output_fname=${output_fname:-$intput_fname.pdf}
 
 document_title=${document_title:-$input_fname}
 document_title=$(echo $document_title | iconv --to-code LATIN2)
@@ -121,7 +140,7 @@ enscript \
 	--encoding latin2 \
 	--output - \
 	|
-ps2pdf - "$input_fname".pdf
+ps2pdf - "$output_fname"
 
 # "--output -" for the enscript command is necessary to write to stdout
 # "--fancy-header=simple2" option name and argument must be joined with

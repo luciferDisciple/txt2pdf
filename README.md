@@ -13,6 +13,7 @@ Produce pdf with the body text read from TEXTFILE.
 -h, --help          display this help and exit
 -d, --date=DATE     use DATE in the running header instead of
                     today's date
+-o, --output=FILE   write output to FILE instead of TEXTFILE.pdf
 -t, --title=TITLE   use TITLE as the title in the running
                     header instead of the TEXTFILE
 
